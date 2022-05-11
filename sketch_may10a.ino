@@ -73,58 +73,23 @@ void loop(){
             client.println("Connection: close");
             client.println();
             
-            // turns the GPIOs on and off
-            if (header.indexOf("GET /26/on") >= 0) {
-              Serial.println("GPIO 26 on");
-              output26State = "on";
-              digitalWrite(output26, HIGH);
-            } else if (header.indexOf("GET /26/off") >= 0) {
-              Serial.println("GPIO 26 off");
-              output26State = "off";
-              digitalWrite(output26, LOW);
-            } else if (header.indexOf("GET /27/on") >= 0) {
-              Serial.println("GPIO 27 on");
-              output27State = "on";
-              digitalWrite(output27, HIGH);
-            } else if (header.indexOf("GET /27/off") >= 0) {
-              Serial.println("GPIO 27 off");
-              output27State = "off";
-              digitalWrite(output27, LOW);
-            }
-            
-            // Display the HTML web page
+            // HTML page 
             client.println("<!DOCTYPE html><html>");
-            client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
-            client.println("<link rel=\"icon\" href=\"data:,\">");
-            // CSS to style the on/off buttons 
-            // Feel free to change the background-color and font-size attributes to fit your preferences
-            client.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
-            client.println(".button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;");
-            client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
-            client.println(".button2 {background-color: #555555;}</style></head>");
-            
-            // Web Page Heading
-            client.println("<body><h1>ESP32 Web Server</h1>");
-            
-            // Display current state, and ON/OFF buttons for GPIO 26  
-            client.println("<p>GPIO 26 - State " + output26State + "</p>");
-            // If the output26State is off, it displays the ON button       
-            if (output26State=="off") {
-              client.println("<p><a href=\"/26/on\"><button class=\"button\">ON</button></a></p>");
-            } else {
-              client.println("<p><a href=\"/26/off\"><button class=\"button button2\">OFF</button></a></p>");
-            } 
-               
-            // Display current state, and ON/OFF buttons for GPIO 27  
-            client.println("<p>GPIO 27 - State " + output27State + "</p>");
-            // If the output27State is off, it displays the ON button       
-            if (output27State=="off") {
-              client.println("<p><a href=\"/27/on\"><button class=\"button\">ON</button></a></p>");
-            } else {
-              client.println("<p><a href=\"/27/off\"><button class=\"button button2\">OFF</button></a></p>");
-            }
-            client.println("</body></html>");
-            
+            client.println("<head><meta name='viewport' content='device-width, intial-scale=1.0'>");
+            client.println(" <style>");
+            client.println("*{font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;}");
+            client.println("img{width: 20vw; aspect-ratio: 1; border-radius: 0.4rem;}");
+            client.println(".flexbox{display: flex;} .flexbox>div{padding: 0.5rem;} button{width: 20vw;margin-top: 0.5rem;padding: 0.5rem;background-color: rgb(21, 36, 5);color: white;border: none;border-radius: 1rem;}h1, h2, h3{align-content: center;align-items: center;text-align: center;}");
+            client.println("</style>");
+            client.println("</head><body>");
+            client.println("<div class='top'><h1>CAO Semester Project</h1></div>");
+            client.println("<h1>Welcome to your E-Garden</h1><h2>Select your plant type: </h2>");
+            client.println(" <div class='flexbox'>");
+            client.println("<div><div><img src='https://images.unsplash.com/photo-1554631221-f9603e6808be?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Y2FjdHVzJTIwcGxhbnR8ZW58MHx8MHx8&w=1000&q=80' alt=''></div><div><a href='/cacti'><button>Cacti</button></a></div></div>");
+            client.println(" <div><div><img src='https://www.thespruce.com/thmb/NEKpRkMfWMZszMcMGn6MpKCLAH8=/3401x2721/filters:no_upscale():max_bytes(150000):strip_icc()/grow-areca-palms-indoors-1902876-vertical-a18bd0c06f8f4d39893f401e762f617e.jpg' alt=''></div><div><a href='/palm'><button>Palms</button></a></div></div>");
+            client.println(" <div><div><img src='https://www.thespruce.com/thmb/nWrcag-Lpnjv6JW9tDy6WHS-zm8=/2667x2000/smart/filters:no_upscale()/neon-pothos-plant-profile-5206135-hero-c6b7295fe1aa472d8e5905e85d287a5b.jpg' alt=''></div><div><a href='/pothos'><button>Pothos</button></a></div></div>");
+            client.println("<div><div><img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1XCPY6F7HVTPhtzhcRbfFtaoZ5OqreFRy8WMlelri9uUkyULuMaK3q2qO2eUUQmVzqSI&usqp=CAU' alt=''></div><div><a href='/ivy'><button>Ivy</button></a></div></div></div>");
+            client.println(" </body></html>");
             // The HTTP response ends with another blank line
             client.println();
             // Break out of the while loop
