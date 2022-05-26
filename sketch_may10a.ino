@@ -1,41 +1,30 @@
 #include <WiFi.h>
 
-// Replace with your network credentials
-const char* ssid = "Hostels Wi-Fi";
+const char* ssid = "Hajra Shahzad";
+const char* password = "lvox2471";
 // Set web server port number to 80
 WiFiServer server(80);
 
 // Variable to store the HTTP request
 String header;
-
-// Auxiliar variables to store the current output state
-String output26State = "off";
-String output27State = "off";
-
-// Assign output variables to GPIO pins
-const int output26 = 26;
-const int output27 = 27;
-
-// Current time
 unsigned long currentTime = millis();
 // Previous time
 unsigned long previousTime = 0; 
-// Define timeout time in milliseconds (example: 2000ms = 2s)
 const long timeoutTime = 2000;
 
+//sensor vals
+const int sensorPin = 15;
+int moistureValue =0;
+float moisturePercent = 0;
+const int airMoisture = 3620; //standard value for air moisture
+const int waterMoisture = 1680;  
+//Input
+String plant = "Not Selected";
 void setup() {
   Serial.begin(115200);
-  // Initialize the output variables as outputs
-  pinMode(output26, OUTPUT);
-  pinMode(output27, OUTPUT);
-  // Set outputs to LOW
-  digitalWrite(output26, LOW);
-  digitalWrite(output27, LOW);
-
-  // Connect to Wi-Fi network with SSID and password
   Serial.print("Connecting to ");
   Serial.println(ssid);
-  WiFi.begin(ssid);
+  WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -72,7 +61,27 @@ void loop(){
             client.println("Content-type:text/html");
             client.println("Connection: close");
             client.println();
+            //logic
+            if (header.indexOf("GET /cacti")>=0){
+              plant = "cacti";
+            }
+            else if (header.indexOf("GET /palm")>=0){
+              plant = "palm";
+            }
+            else if (header.indexOf("GET /pothos")>=0){
+              plant = "pothos";
+            }
+            else if (header.indexOf("GET /ivy")>=0){
+              plant = "ivy";
+            }
+            Serial.println(plant);
+             moistureValue = analogRead(sensorPin);
+             moisturePercent = map(moistureValue,airMoisture, waterMoisture, 0, 100);
+             Serial.println(moisturePercent);
+            // Serial.println(moisturePercent);
+            // delay(500);
             
+            //end logic
             // HTML page 
             client.println("<!DOCTYPE html><html>");
             client.println("<head><meta name='viewport' content='device-width, intial-scale=1.0'>");
@@ -81,6 +90,7 @@ void loop(){
             client.println("img{width: 20vw; aspect-ratio: 1; border-radius: 0.4rem;}");
             client.println(".flexbox{display: flex;} .flexbox>div{padding: 0.5rem;} button{width: 20vw;margin-top: 0.5rem;padding: 0.5rem;background-color: rgb(21, 36, 5);color: white;border: none;border-radius: 1rem;}h1, h2, h3{align-content: center;align-items: center;text-align: center;}");
             client.println("</style>");
+            
             client.println("</head><body>");
             client.println("<div class='top'><h1>CAO Semester Project</h1></div>");
             client.println("<h1>Welcome to your E-Garden</h1><h2>Select your plant type: </h2>");
@@ -90,6 +100,64 @@ void loop(){
             client.println(" <div><div><img src='https://www.thespruce.com/thmb/nWrcag-Lpnjv6JW9tDy6WHS-zm8=/2667x2000/smart/filters:no_upscale()/neon-pothos-plant-profile-5206135-hero-c6b7295fe1aa472d8e5905e85d287a5b.jpg' alt=''></div><div><a href='/pothos'><button>Pothos</button></a></div></div>");
             client.println("<div><div><img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1XCPY6F7HVTPhtzhcRbfFtaoZ5OqreFRy8WMlelri9uUkyULuMaK3q2qO2eUUQmVzqSI&usqp=CAU' alt=''></div><div><a href='/ivy'><button>Ivy</button></a></div></div></div>");
             client.println(" </body></html>");
+            //logic
+              if(moisturePercent < 0){
+              Serial.println("water your plants");
+              delay(500);
+             }
+             if(plant.equals("cacti")){
+                if (moisturePercent >=0 && moisturePercent <=10){
+                   Serial.println("water your plants");
+                   delay(100);
+                } 
+                else if (moisturePercent > 10 && moisturePercent <= 50){
+                   Serial.println("Your cactus doesn't need water yet, give it 1-2 more days");
+                   delay(100);
+                }
+                else if (moisturePercent > 50){
+                   Serial.println("Your cactus has enough water right now!");
+                   delay(100);
+                }
+             }
+             else if(plant.equals("palm")){
+                 if (moisturePercent >=0 && moisturePercent <=30){
+                   Serial.println("water your plants");
+                   delay(100);
+                } 
+                else if (moisturePercent > 30 && moisturePercent <= 50){
+                   Serial.println("Your palm doesn't need water yet, give it 1-2 more days");
+                   delay(100);
+                }
+                else if (moisturePercent > 50){
+                   Serial.println("Your palm has enough water right now!");
+                   delay(100);
+                }
+             }
+               else if(plant.equals("pothos")){
+                 if (moisturePercent >=0 && moisturePercent <=25){
+                   Serial.println("water your plants");
+                   delay(100);
+                } 
+                else if (moisturePercent > 25 && moisturePercent <= 50){
+                   Serial.println("Your pothos need water yet, give it 1-2 more days");
+                   delay(100);
+                }
+                else if (moisturePercent > 50){
+                   Serial.println("Your pothos enough water right now!");
+                   delay(100);
+                }
+             }
+               else if(plant.equals("ivy")){
+                 if (moisturePercent >=0 && moisturePercent <=50){
+                   Serial.println("water your plants");
+                   delay(100);
+                } 
+                else if (moisturePercent > 50){
+                   Serial.println("Your ivy doesn't need water yet, give it 1-2 more days");
+                   delay(100);
+                }
+             }
+            //end logic
             // The HTTP response ends with another blank line
             client.println();
             // Break out of the while loop
